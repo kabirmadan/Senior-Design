@@ -22,6 +22,6 @@ git pull
 
 # Install the latest requirements
 echo "Installing latest requirements..."
-pip install -r requirements.txt
+pip3 install -r requirements.txt
 
-echo "Project update complete!"
+echo "Project update complete"
