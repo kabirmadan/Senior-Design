@@ -1,0 +1,62 @@
+# Compiled Python files
+*.pyc
+*.pyo
+__pycache__/
+
+# Virtual environments
+venv/
+env/
+.venv/
+*.venv
+
+# Compiled output
+dist/
+tmp/
+out-tsc/
+bazel-out/
+
+# Node
+node_modules/
+npm-debug.log
+yarn-error.log
+
+# Raspberry Pi
+*.swp
+*.swo
+*.swn
+*.swm
+*.swx
+*.swa
+*.swz
+*.swt
+*.swu
+*.swv
+*.swc
+*.swq
+
+# Compiled Arduino/C++ files
+*.ino.cpp
+*.ino.hex
+*.ino.elf
+*.ino.map
+
+# Motor controllers
+*.ino.cpp
+*.ino.hex
+*.ino.elf
+*.ino.map
+
+# OS-specific files
+.DS_Store
+Thumbs.db
+
+# Editor files
+*.vscode/
+*.idea/
+*.sublime-*
+*.code-workspace
+
+# Miscellaneous
+.env
+.env.*
+.DS_Store

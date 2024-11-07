@@ -1,0 +1,7 @@
+opencv-contrib-python==4.10.0.84
+pandas==2.1.2
+Pillow==10.1.0
+numpy==2.1.1
+black==24.8.0
+pygame==2.6.1
+pyserial==3.5
