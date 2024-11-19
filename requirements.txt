@@ -1,6 +1,6 @@
 black==24.8.0
 click==8.1.7
-GPIOEmulator==1.1.2
+fake-rpi==0.7.1
 mypy-extensions==1.0.0
 numpy==1.26.4
 opencv-contrib-python==4.10.0.84
