@@ -1,6 +1,13 @@
 import cv2
 import numpy as np
 import time
+import fake_rpi
+import sys 
+sys.modules['RPi'] = fake_rpi.RPi     # Fake RPi
+sys.modules['RPi.GPIO'] = fake_rpi.RPi.GPIO # Fake GPIO
+import RPi.GPIO as GPIO
+
+
 
 # Draws bounding circle (ball outline), returns center[] and radius
 # Will eventually be void type when we mount the camera and determine const ball pos
@@ -15,7 +22,9 @@ def drawOutlineCircle(frame):
 	cv2.circle(frame, center, radius, color, thickness) 
 	return [center, radius]
 
-def getColor(point_coords):
+
+# Returns pixel color 
+def getColor(frame, point_coords):
 	pixel_hsv = frame[point_coords[1], point_coords[0]]
 
 	red_ranges = [((0,100,100),(10,255,255)), ((160, 100, 100),(180, 255, 255))]
@@ -32,32 +41,50 @@ def getColor(point_coords):
 	
 	return ("unknown color")
 
-"""
-def generatePoints(circle_dims, num_samples):
+
+def generatePoints(num_samples, circle_dims):
 	points = []
 	ball_center_x, ball_center_y  = circle_dims[0]
 	radius = circle_dims[1]
+
 	for i in range(num_samples):
+
 		theta_rand = np.random.rand() * 2 * np.pi
 		dist_rand = np.random.rand() * radius
 		dist_rand_x = dist_rand * np.cos(theta_rand)
 		dist_rand_y = dist_rand * np.sin(theta_rand)
-"""
+		
+		rand_point_x = ball_center_x + dist_rand_x
+		rand_point_y = ball_center_y + dist_rand_y
 
-cap = cv2.VideoCapture(0)
-cv2.namedWindow("window")
+		points.append([rand_point_x, rand_point_y])
+
+	return points
+
+def sort():
+
+	colors_detected = {"red":0, "yellow":0, "blue":0}		# dict to keep track of how many instances of each color occur in circle	
+
+	cap = cv2.VideoCapture(0)
+	cv2.namedWindow("window")
+
+	while True:
+		ret, frame_bgr = cap.read()
+		frame_hsv = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2HSV)
+		dims = drawOutlineCircle(frame_bgr)
+		cv2.imshow("window", frame_bgr)
+
+		sampling_points = generatePoints(5, dims)
+		for point in sampling_points:
+			color = getColor(frame_hsv, dims[0])		# returns color (str) of one sampled pixel
+
+		if cv2.waitKey(1) & 0xFF==27:
+			break
+
+	cv2.destroyAllWindows()
+	cap.release()
 
 
-while True:
-	ret, frame_bgr = cap.read()
-	frame = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2HSV)
-	dims = drawOutlineCircle(frame_bgr)
-	cv2.imshow("window", frame_bgr)
-	color = getColor(dims[0])
-	print(color)
-	if cv2.waitKey(1) & 0xFF==27:
-		break
 
 
-cv2.destroyAllWindows()
-cap.release()
+sort()
