@@ -8,6 +8,17 @@ sys.modules['RPi.GPIO'] = fake_rpi.RPi.GPIO # Fake GPIO
 import RPi.GPIO as GPIO
 
 
+SERVO_1_PIN = 12
+SERVO_2_PIN = 13
+PWM_FREQ = 1000 # Hz
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setup(SERVO_1_PIN, GPIO.OUT)
+GPIO.setup(SERVO_2_PIN, GPIO.OUT)
+Servo1 = GPIO.PWM(SERVO_1_PIN, PWM_FREQ)
+Servo2 = GPIO.PWM(SERVO_2_PIN, PWM_FREQ)
+Servo1.start(0)
+Servo2.start(0)
 
 # Draws bounding circle (ball outline), returns center[] and radius
 # Will eventually be void type when we mount the camera and determine const ball pos
@@ -25,7 +36,7 @@ def drawOutlineCircle(frame):
 
 # Returns pixel color 
 def getColor(frame, point_coords):
-	pixel_hsv = frame[point_coords[1], point_coords[0]]
+	pixel_hsv = frame[int(point_coords[1]), int(point_coords[0])]
 
 	red_ranges = [((0,100,100),(10,255,255)), ((160, 100, 100),(180, 255, 255))]
 	
@@ -39,15 +50,16 @@ def getColor(frame, point_coords):
 	if pixel_hsv[0] < 160:
 		return "blue"
 	
-	return ("unknown color")
+	return ("other")
 
 
-def generatePoints(num_samples, circle_dims):
+# Generates n random points within limits of bounding circle
+def generatePoints(n, circle_dims):
 	points = []
 	ball_center_x, ball_center_y  = circle_dims[0]
 	radius = circle_dims[1]
 
-	for i in range(num_samples):
+	for i in range(n):
 
 		theta_rand = np.random.rand() * 2 * np.pi
 		dist_rand = np.random.rand() * radius
@@ -61,25 +73,31 @@ def generatePoints(num_samples, circle_dims):
 
 	return points
 
-def sort():
 
-	colors_detected = {"red":0, "yellow":0, "blue":0}		# dict to keep track of how many instances of each color occur in circle	
+def sort():
 
 	cap = cv2.VideoCapture(0)
 	cv2.namedWindow("window")
 
 	while True:
+
+		# capture frame and draw bounding circle
+		# + show live video feed in window
 		ret, frame_bgr = cap.read()
-		frame_hsv = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2HSV)
+		frame_hsv = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2HSV)			# switch to HSV colorspace
 		dims = drawOutlineCircle(frame_bgr)
 		cv2.imshow("window", frame_bgr)
 
-		sampling_points = generatePoints(5, dims)
-		for point in sampling_points:
-			color = getColor(frame_hsv, dims[0])		# returns color (str) of one sampled pixel
+		colors_detected = {"red":0, "yellow":0, "blue":0, "other":0}		# dict to count instances of each color in circle	
+		sampling_points = generatePoints(100, dims)				# define sample pixels
+		for point in sampling_points:						# loop through every randomly generated point
+			color = getColor(frame_hsv, point)				# returns color (str) of one point (one pixel)
+			colors_detected[color] = colors_detected[color] + 1		# increment counter of found color in dict
+		print(colors_detected)
+		color_determined = max(colors_detected, key=colors_detected.get)	# color of object in circle is deemed to be dict key with highest count
+		print(color_determined)
 
-		if cv2.waitKey(1) & 0xFF==27:
-			break
+		if cv2.waitKey(1) & 0xFF==27 : break					# exit on 'esc' keypress
 
 	cv2.destroyAllWindows()
 	cap.release()
