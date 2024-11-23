@@ -120,7 +120,7 @@ if pygame.joystick.get_count() > 0:
             time.sleep(0.1)
 
     except KeyboardInterrupt:
-    print("\n exiting")
+        print("\n exiting")
 else:
     print("No joystick detected")
 pygame.quit()
