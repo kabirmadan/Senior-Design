@@ -8,7 +8,7 @@ import serial
 pygame.init()
 pygame.joystick.init()
 
-ser = serial.Serial('/dev/serial0/', baudrate = 9600, timeout = 1)
+ser = serial.Serial('/dev/serial0', baudrate = 9600, timeout = 1)
 
 ### intake motors ###
 M1A = 13
@@ -70,7 +70,7 @@ if pygame.joystick.get_count() > 0:
                     running = False
 
             if joystick.get_button(10):
-                pritn("Button 10 is pressed")
+                print("Button 10 is pressed")
                 if not running_main_code:
                     running_main_code = True
                     print(f"Running main code {running_main_code}")
