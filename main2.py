@@ -11,13 +11,13 @@ pygame.joystick.init()
 ser = serial.Serial('/dev/serial0', baudrate = 9600, timeout = 1)
 
 ### intake motors ###
-flywheel = 13
-pulley = 12
+flywheel = 6
+pulley = 5
 launcher_extend = 17
 launcher_retract = 27
 weightlift_extend = 9
 weightlift_retract = 10
-
+servoPin = 12
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -27,6 +27,12 @@ GPIO.setup(launcher_extend, GPIO.OUT)
 GPIO.setup(launcher_retract, GPIO.OUT)
 GPIO.setup(weightlift_extend, GPIO.OUT)
 GPIO.setup(weightlift_retract, GPIO.OUT)
+
+GPIO.setmode(GPIO.BCM)
+GPIO.setwarnings(False)
+GPIO.setup(servoPin, GPIO.OUT)
+p1 = GPIO.PWM(servoPin, 50)
+p1.start(0)
 
 flywheel_p = GPIO.PWM(flywheel, 2000)
 pulley_p = GPIO.PWM(pulley, 2000)
@@ -165,17 +171,15 @@ if pygame.joystick.get_count() > 0:
                 
                 ## start sorting system
                 if joystick.get_button(9):
-                    if not sorting_on:
-                        sorting_on = True
-                    elif sorting_on:
-                        sorting_on = False
-
-                while sorting_on:
-                    p1.ChangeDutyCycle(2.5)
+                    print("Button 9 pressed")
+                    print("sorting on")
+                    p1.ChangeDutyCycle(5)
+                    print("duty 5")
                     time.sleep(3)
                     # loc 2
                     p1.ChangeDutyCycle(7.5)
-                    #sort()
+                                        #sort()
+                    print("duty 7.5")
                     #if (color_determined == launch_color && launch_sorted == False):
                      #   p2.ChangeDutyCycle(2.5)
                       #  launch_sorted = True
@@ -191,7 +195,7 @@ if pygame.joystick.get_count() > 0:
                       #  time.sleep(0.5)
                     time.sleep(3)
                     # loc 3 
-                    p1.ChangeDutyCycle(12.5)
+                    p1.ChangeDutyCycle(10)
                     time.sleep(3)
 
                 if joystick.get_button(10):
