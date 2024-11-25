@@ -1,11 +1,14 @@
 import cv2
 import numpy as np
 import time
-import fake_rpi
+#import fake_rpi
 import sys 
-sys.modules['RPi'] = fake_rpi.RPi     # Fake RPi
-sys.modules['RPi.GPIO'] = fake_rpi.RPi.GPIO # Fake GPIO
+#sys.modules['RPi'] = fake_rpi.RPi     # Fake RPi
+#sys.modules['RPi.GPIO'] = fake_rpi.RPi.GPIO # Fake GPIO
 import RPi.GPIO as GPIO
+import os
+GPIO.setwarnings(False)
+os.environ["QT_QPA_PLATFORM"] = "offscreen"
 
 
 SERVO_1_PIN = 12
@@ -77,7 +80,8 @@ def generatePoints(n, circle_dims):
 def sort():
 
 	cap = cv2.VideoCapture(0)
-	cv2.namedWindow("window")
+
+	#cv2.namedWindow("window")
 
 	while True:
 
@@ -86,7 +90,7 @@ def sort():
 		ret, frame_bgr = cap.read()
 		frame_hsv = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2HSV)			# switch to HSV colorspace
 		dims = drawOutlineCircle(frame_bgr)
-		cv2.imshow("window", frame_bgr)
+		#cv2.imshow("window", frame_bgr)
 
 		colors_detected = {"red":0, "yellow":0, "blue":0, "other":0}		# dict to count instances of each color in circle	
 		sampling_points = generatePoints(100, dims)				# define sample pixels
@@ -97,12 +101,12 @@ def sort():
 		color_determined = max(colors_detected, key=colors_detected.get)	# color of object in circle is deemed to be dict key with highest count
 		print(color_determined)
 
-		if cv2.waitKey(1) & 0xFF==27 : break					# exit on 'esc' keypress
 
-	cv2.destroyAllWindows()
 	cap.release()
 
 
 
 
 sort()
+
+GPIO.cleanup()
