@@ -79,42 +79,37 @@ def capture_image(output_path):
 
 
 def sort():
-    output_path = "/home/seniordesign/gittest/Senior-Design/captured_image.jpg"
+	output_path = "/home/seniordesign/gittest/Senior-Design/captured_image.jpg"
     
-    while True:
-        # Capture a still image
-        capture_image(output_path)
-
-        # Read the captured image
-        frame_bgr = cv2.imread(output_path)
-        if frame_bgr is None:
-            print("Error: Failed to read the captured image.")
-            continue
-
-        # Convert to HSV and process the frame
-        frame_hsv = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2HSV)
-        dims = drawOutlineCircle(frame_bgr)
-
-        # Analyze colors within the bounding circle
-        colors_detected = {"red": 0, "yellow": 0, "blue": 0, "other": 0}
-        sampling_points = generatePoints(100, dims)
-        for point in sampling_points:
-            color = getColor(frame_hsv, point)
-            colors_detected[color] += 1
-
-        # Determine the dominant color
-        color_determined = max(colors_detected, key=colors_detected.get)
-        print("Colors detected:", colors_detected)
-        print("Dominant color:", color_determined)
-        exit
-
-        # Show the frame (optional, for debugging when not headless)
-        #cv2.imshow("Captured Frame", frame_bgr):w
-        #if cv2.waitKey(1) & 0xFF == 27:  # Press 'Esc' to exit
-         #   break
-
-    cv2.destroyAllWindows()
-
-
-sort()
-exit
+	# Capture a still image
+	capture_image(output_path)
+	
+	# Read the captured image
+	frame_bgr = cv2.imread(output_path)
+	if frame_bgr is None:
+	    print("Error: Failed to read the captured image.")
+	    continue
+	
+	# Convert to HSV and process the frame
+	frame_hsv = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2HSV)
+	dims = drawOutlineCircle(frame_bgr)
+	
+	# Analyze colors within the bounding circle
+	colors_detected = {"red": 0, "yellow": 0, "blue": 0, "other": 0}
+	sampling_points = generatePoints(100, dims)
+	for point in sampling_points:
+	    color = getColor(frame_hsv, point)
+	    colors_detected[color] += 1
+	
+	# Determine the dominant color
+	color_determined = max(colors_detected, key=colors_detected.get)
+	print("Colors detected:", colors_detected)
+	print("Dominant color:", color_determined)
+	
+    	cv2.destroyAllWindows()
+	return color_determined
+	
+	# Show the frame (optional, for debugging when not headless)
+	#cv2.imshow("Captured Frame", frame_bgr)
+	#if cv2.waitKey(1) & 0xFF == 27:  # Press 'Esc' to exit
+	 #   break
