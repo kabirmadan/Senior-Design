@@ -19,8 +19,9 @@ Servo2.start(0)
 
 # Draws bounding circle (ball outline), returns center[] and radius
 def drawOutlineCircle(frame):
-	height, width = frame.shape[:2]
-	centerX = width // 2
+
+    height, width = frame.shape[:2]
+	centerX = width //2 
 	centerY = height // 2
 	center = (centerX, centerY)
 	radius = 100
@@ -88,7 +89,6 @@ def sort():
 	frame_bgr = cv2.imread(output_path)
 	if frame_bgr is None:
 		print("Error: Failed to read the captured image.")
-		continue
 	
 	# Convert to HSV and process the frame
 	frame_hsv = cv2.cvtColor(frame_bgr, cv2.COLOR_BGR2HSV)
@@ -106,11 +106,12 @@ def sort():
 	print("Colors detected:", colors_detected)
 	print("Dominant color:", color_determined)
 	
-	cv2.destroyAllWindows()
 	return color_determined
 	
 	# Show the frame (optional, for debugging when not headless)
-	#cv2.imshow("Captured Frame", frame_bgr)
+	cv2.imshow("Captured Frame", frame_bgr)
 	#if cv2.waitKey(1) & 0xFF == 27:  # Press 'Esc' to exit
 	#	break
+	#cv2.destroyAllWindows()
 
+sort()
