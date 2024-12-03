@@ -297,45 +297,47 @@ if pygame.joystick.get_count() > 0:
                     print("Button 9 pressed")
                     if not sorting_on:
                         sorting_on = True
-                        print("sorting on")
-                        topServo_p.ChangeDutyCycle(11)
-                        time.sleep(0.5)
-                        topServo_p.ChangeDutyCycle(0)
-                        time.sleep(3)
-                        # move servo to capture color
-                        topServo_p.ChangeDutyCycle(9)
-                        time.sleep(0.5)
-                        topServo_p.ChangeDutyCycle(0)
-                        color_determined = sort()
-                        print(color_determined)
-                        time.sleep(3)
-
-                        if(color_determined == launch_color and launch_ball_sorted == False):
-                            slideServo_p.ChangeDutyCycle(3.75)
+                        while sorting_on:
+                            print("sorting on")
+                            topServo_p.ChangeDutyCycle(11)
                             time.sleep(0.5)
-                            print("3.75 - launch ball sorted")
-                            slideServo_p.ChangeDutyCycle(0)
-                            launch_ball_sorted = True
-                        elif(color_determined == "blue"):
-                            slideServo_p.ChangeDutyCycle(5)
+                            topServo_p.ChangeDutyCycle(0)
+                            time.sleep(3)
+                            # move servo to capture color
+                            topServo_p.ChangeDutyCycle(9)
                             time.sleep(0.5)
-                            print("5")
-                            slideServo_p.ChangeDutyCycle(0)
-                        elif(color_determined == "yellow"):
-                            slideServo_p.ChangeDutyCycle(6)
+                            topServo_p.ChangeDutyCycle(0)
+                            color_determined = sort()
+                            print(color_determined)
+                            time.sleep(3)
+    
+                            if(color_determined == launch_color and launch_ball_sorted == False):
+                                slideServo_p.ChangeDutyCycle(3.75)
+                                time.sleep(0.5)
+                                print("3.75 - launch ball sorted")
+                                slideServo_p.ChangeDutyCycle(0)
+                                launch_ball_sorted = True
+                            elif(color_determined == "blue"):
+                                slideServo_p.ChangeDutyCycle(5)
+                                time.sleep(0.5)
+                                print("5")
+                                slideServo_p.ChangeDutyCycle(0)
+                            elif(color_determined == "yellow"):
+                                slideServo_p.ChangeDutyCycle(6)
+                                time.sleep(0.5)
+                                print("6")
+                                slideServo_p.ChangeDutyCycle(0)
+                            elif(color_determined == "red"):
+                                slideServo_p.ChangeDutyCycle(7)
+                                time.sleep(0.5)
+                                print("7")
+                                slideServo_p.ChangeDutyCycle(0)
+                                
+                            # move servo to drop ball
+                            topServo_p.ChangeDutyCycle(5.5)
                             time.sleep(0.5)
-                            print("6")
-                            slideServo_p.ChangeDutyCycle(0)
-                        elif(color_determined == "red"):
-                            slideServo_p.ChangeDutyCycle(7)
-                            time.sleep(0.5)
-                            print("7")
-                            slideServo_p.ChangeDutyCycle(0)
-                            
-                        # move servo to drop ball
-                        topServo_p.ChangeDutyCycle(5.5)
-                        time.sleep(0.5)
-                        topServo_p.ChangeDutyCycle(0)
+                            topServo_p.ChangeDutyCycle(0)
+                            time.sleep(3)
                     elif sorting_on:
                         sorting_on = False
                         time.sleep(0.5)
