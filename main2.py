@@ -60,8 +60,16 @@ def map_value(value, in_min, in_max, out_min, out_max):
 def set_drive_speed(turn, speed):
     left_wheel_speed = int(speed*(1 + turn))
     right_wheel_speed = int(speed*(1 - turn))
-    left_motor_speed = 64 + max(-63, min(63, left_wheel_speed))
-    right_motor_speed = 192 + max(-63, min(63, right_wheel_speed))
+    if speed > 0:
+        left_motor_speed = 64 + max(-63, min(63, left_wheel_speed))
+        right_motor_speed = 192 + max(-63, min(63, right_wheel_speed))
+    elif speed < 0:
+        left_motor_speed = 64 + min( max(-63, left_wheel_speed), 63)
+        right_motor_speed = 192 + min( max(-63, right_wheel_speed), 63)
+    elif speed == 0:
+        left_motor_speed = 64
+        right_motor_speed = 192
+
     print(f"Left speed: {left_motor_speed} Right speed: {right_motor_speed}")
 
     ser.write(bytes([left_motor_speed]))
@@ -201,26 +209,30 @@ if pygame.joystick.get_count() > 0:
                 ## set drive motors
                 foward_speed_axis = round(joystick.get_axis(5), 3)
                 foward_speed = map_value(foward_speed_axis, -1, 1, 0, 63)
-                
+
                 backward_speed_axis = round(joystick.get_axis(2), 3)
-                backward_speed = map_value(foward_speed_axis, -1, 1, 0, -63)
+                backward_speed = map_value(backward_speed_axis, -1, 1, 0, -63)
 
                 turn = round(joystick.get_axis(0), 3)
                 if abs(turn) < 0.1:
                     turn = 0
 
                 ## send motor speed to motors
-                if foward_speed > 0:
+                if foward_speed > 1:
                     set_drive_speed(turn, foward_speed)
                     time.sleep(0.1)
-                if backward_speed > 0:
+                elif backward_speed < -1:
                     set_drive_speed(turn, backward_speed)
-                    time.sleep(0.1)  
-
-                ## break function
-                if joystick.get_button(6):
+                    time.sleep(0.1)
+                elif(foward_speed < 1 and backward_speed > -1):
                     set_drive_speed(0, 0)
                     time.sleep(0.1)
+
+                ## break function
+                if joystick.get_button(4):
+                    print("break pressed")
+                    set_drive_speed(0, 0)
+                    time.sleep(0.5)
 
                 ## set intake motors
                 if joystick.get_button(2):
@@ -266,12 +278,19 @@ if pygame.joystick.get_count() > 0:
                 ## select color to launch
                 if joystick.get_button(1):
                     launch_color = "blue"
+                    print("blue selected")
+                    time.sleep(0.5)
+
 
                 if joystick.get_button(3):
                     launch_color = "yellow"
+                    print("yellow selected")
+                    time.sleep(0.5)
 
-                if joystick.get_button(1):
+                if joystick.get_button(0):
                     launch_color = "red"
+                    print("red selected")
+                    time.sleep(0.5)
                 
                 ## start sorting system
                 if joystick.get_button(9):
@@ -291,7 +310,7 @@ if pygame.joystick.get_count() > 0:
                         print(color_determined)
                         time.sleep(3)
 
-                        if(color_determined == launch_color && launch_ball_sorted == False):
+                        if(color_determined == launch_color and launch_ball_sorted == False):
                             slideServo_p.ChangeDutyCycle(3.75)
                             time.sleep(0.5)
                             print("3.75 - launch ball sorted")
@@ -319,6 +338,7 @@ if pygame.joystick.get_count() > 0:
                         topServo_p.ChangeDutyCycle(0)
                     elif sorting_on:
                         sorting_on = False
+                        time.sleep(0.5)
                         print("sorting off")
                         
 
