@@ -17,12 +17,12 @@ ser = serial.Serial('/dev/serial0', baudrate = 9600, timeout = 1)
 ### initalize motor pins ###
 flywheel = 6
 pulley = 5
-launcher_extend = 17
-launcher_retract = 27
+launcher_extend = 13
+launcher_retract = 12
 weightlift_extend = 9
 weightlift_retract = 10
-topServo = 12
-slideServo = 13
+topServo = 17
+slideServo = 27
 
 GPIO.setmode(GPIO.BCM)
 GPIO.setwarnings(False)
@@ -41,8 +41,8 @@ launcher_extend_p = GPIO.PWM(launcher_extend, 2000)
 launcher_retract_p = GPIO.PWM(launcher_retract, 2000)
 weightlift_extend_p = GPIO.PWM(weightlift_extend, 2000)
 weightlift_retract_p = GPIO.PWM(weightlift_retract, 2000)
-topServo_p = GPIO.PWM(topServo, 2000)
-topServo_p.start(11)
+topServo_p = GPIO.PWM(topServo, 50)
+topServo_p.start(12)
 slideServo_p = GPIO.PWM(slideServo, 50)
 slideServo_p.start(1)
 
@@ -79,9 +79,9 @@ def set_drive_speed(turn, speed):
 def drawOutlineCircle(frame):
     height, width = frame.shape[:2]
     centerX = width //2 - 20
-    centerY = height // 2 + 125
+    centerY = height // 2 - 125
     center = (centerX, centerY)
-    radius = 70
+    radius = 50
     color = (255, 255, 255)
     thickness = 2
     cv2.circle(frame, center, radius, color, thickness)
@@ -188,6 +188,9 @@ if pygame.joystick.get_count() > 0:
         sorting_on = False
         launch_ball_sorted = False
         launch_color_selected = False
+
+        topServo_p.ChangeDutyCycle(0)
+        slideServo_p.ChangeDutyCycle(0)
 
         print("running")
         while running:
@@ -299,23 +302,23 @@ if pygame.joystick.get_count() > 0:
                 ## start sorting system
                 if joystick.get_button(9):
                     if launch_color_selected:
-                        print("sorting on")
+                        print("sorting on")#
+                        topServo_p.ChangeDutyCycle(12)
+                        time.sleep(0.1)
                         topServo_p.ChangeDutyCycle(11)
                         time.sleep(0.1)
-                        topServo_p.ChangeDutyCycle(0)
-                        time.sleep(3)
                         # move servo to capture color
-                        topServo_p.ChangeDutyCycle(9)
+                        topServo_p.ChangeDutyCycle(10)
                         time.sleep(0.1)
                         topServo_p.ChangeDutyCycle(0)
                         color_determined = sort()
                         print(color_determined)
-                        time.sleep(3)
+
     
                         if(color_determined == launch_color and launch_ball_sorted == False):
-                            slideServo_p.ChangeDutyCycle(3.75)
+                            slideServo_p.ChangeDutyCycle(4)
                             time.sleep(0.1)
-                            print("3.75 - launch ball sorted")
+                            print("4 - launch ball sorted")
                             slideServo_p.ChangeDutyCycle(0)
                             launch_ball_sorted = True
                         elif(color_determined == "blue"):
@@ -335,10 +338,24 @@ if pygame.joystick.get_count() > 0:
                             slideServo_p.ChangeDutyCycle(0)
                                 
                         # move servo to drop ball
-                        topServo_p.ChangeDutyCycle(5.5)
+                        topServo_p.ChangeDutyCycle(7.5)
                         time.sleep(0.1)
                         topServo_p.ChangeDutyCycle(0)
-                        time.sleep(3) 
+                        time.sleep(2) 
+                        
+                        topServo_p.ChangeDutyCycle(8)
+                        time.sleep(0.1)
+                        topServo_p.ChangeDutyCycle(9)
+                        time.sleep(0.1) 
+                        topServo_p.ChangeDutyCycle(10)
+                        time.sleep(0.1)
+                        topServo_p.ChangeDutyCycle(11)
+                        time.sleep(0.1) 
+                        topServo_p.ChangeDutyCycle(12)
+                        time.sleep(0.1)
+                        topServo_p.ChangeDutyCycle(0)
+                        time.sleep(0.5) 
+
                     else:
                         print("please select launch color then run sorting again")
 
