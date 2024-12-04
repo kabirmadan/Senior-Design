@@ -70,7 +70,7 @@ def set_drive_speed(turn, speed):
         left_motor_speed = 64
         right_motor_speed = 192
 
-    print(f"Left speed: {left_motor_speed} Right speed: {right_motor_speed}")
+    # print(f"Left speed: {left_motor_speed} Right speed: {right_motor_speed}")
 
     ser.write(bytes([left_motor_speed]))
     ser.write(bytes([right_motor_speed]))
@@ -187,6 +187,7 @@ if pygame.joystick.get_count() > 0:
         running_main_code = False
         sorting_on = False
         launch_ball_sorted = False
+        launch_color_selected = False
 
         print("running")
         while running:
@@ -199,7 +200,7 @@ if pygame.joystick.get_count() > 0:
                 if not running_main_code:
                     running_main_code = True
                     print(f"Running main code {running_main_code}")
-                    time.sleep(0.5)
+                    time.sleep(0.3)
 
             while running_main_code:
                 for event in pygame.event.get(0):
@@ -227,12 +228,12 @@ if pygame.joystick.get_count() > 0:
                 elif(foward_speed < 1 and backward_speed > -1):
                     set_drive_speed(0, 0)
                     time.sleep(0.1)
-
+                   
                 ## break function
                 if joystick.get_button(4):
                     print("break pressed")
                     set_drive_speed(0, 0)
-                    time.sleep(0.5)
+                    time.sleep(0.3)
 
                 ## set intake motors
                 if joystick.get_button(2):
@@ -241,13 +242,13 @@ if pygame.joystick.get_count() > 0:
                         set_motor_speed(flywheel_p, 255)
                         set_motor_speed(pulley_p, 255)
                         print("intake on")
-                        time.sleep(0.5)
+                        time.sleep(0.3)
                     elif intake_on:
                         intake_on = False
                         set_motor_speed(flywheel_p, 0)
                         set_motor_speed(pulley_p, 0)
                         print("intake off")
-                        time.sleep(0.5)
+                        time.sleep(0.3)
 
                 ## set launch/ weightlift motor
                 hat_val = joystick.get_hat(0)
@@ -256,93 +257,90 @@ if pygame.joystick.get_count() > 0:
                         launcher_extended = True
                         set_motor_speed(launcher_extend_p, 255)
                         print("launcher extended")
-                        time.sleep(0.5)
+                        time.sleep(0.3)
                     elif launcher_extended:
                         launcher_extended = False
                         set_motor_speed(launcher_retract_p, 255)
                         print("launcher retracted")
-                        time.sleep(0.5)
+                        time.sleep(0.3)
                 
                 if hat_val == (0, -1):
                     if not weightlift_extended:
                         weightlift_extended = True
                         set_motor_speed(weightlift_extend_p, 255)
                         print("weightlift extended")
-                        time.sleep(0.5)
+                        time.sleep(0.3)
                     elif weightlift_extended:
                         weightlift_extended = False
                         set_motor_speed(weightlift_retract_p, 255)
                         print("weightlift retracted")
-                        time.sleep(0.5)
+                        time.sleep(0.3)
                 
                 ## select color to launch
                 if joystick.get_button(1):
                     launch_color = "blue"
                     print("blue selected")
-                    time.sleep(0.5)
+                    launch_color_selected = True
+                    time.sleep(0.3)
 
 
                 if joystick.get_button(3):
                     launch_color = "yellow"
                     print("yellow selected")
-                    time.sleep(0.5)
+                    launch_color_selected = True
+                    time.sleep(0.3)
 
                 if joystick.get_button(0):
                     launch_color = "red"
                     print("red selected")
-                    time.sleep(0.5)
+                    launch_color_selected = True
+                    time.sleep(0.3)
                 
                 ## start sorting system
                 if joystick.get_button(9):
-                    print("Button 9 pressed")
-                    time.sleep(0.5)
-                    if not sorting_on:
-                        sorting_on = True
-                        while sorting_on:
-                            if joystick.get_button(8):
-                                sorting_on = False
-                                print("sorting off")
-                                time.sleep(0.5)
-                            print("sorting on")
-                            topServo_p.ChangeDutyCycle(11)
-                            time.sleep(0.5)
-                            topServo_p.ChangeDutyCycle(0)
-                            time.sleep(3)
-                            # move servo to capture color
-                            topServo_p.ChangeDutyCycle(9)
-                            time.sleep(0.5)
-                            topServo_p.ChangeDutyCycle(0)
-                            color_determined = sort()
-                            print(color_determined)
-                            time.sleep(3)
+                    if launch_color_selected:
+                        print("sorting on")
+                        topServo_p.ChangeDutyCycle(11)
+                        time.sleep(0.1)
+                        topServo_p.ChangeDutyCycle(0)
+                        time.sleep(3)
+                        # move servo to capture color
+                        topServo_p.ChangeDutyCycle(9)
+                        time.sleep(0.1)
+                        topServo_p.ChangeDutyCycle(0)
+                        color_determined = sort()
+                        print(color_determined)
+                        time.sleep(3)
     
-                            if(color_determined == launch_color and launch_ball_sorted == False):
-                                slideServo_p.ChangeDutyCycle(3.75)
-                                time.sleep(0.5)
-                                print("3.75 - launch ball sorted")
-                                slideServo_p.ChangeDutyCycle(0)
-                                launch_ball_sorted = True
-                            elif(color_determined == "blue"):
-                                slideServo_p.ChangeDutyCycle(5)
-                                time.sleep(0.5)
-                                print("5")
-                                slideServo_p.ChangeDutyCycle(0)
-                            elif(color_determined == "yellow"):
-                                slideServo_p.ChangeDutyCycle(6)
-                                time.sleep(0.5)
-                                print("6")
-                                slideServo_p.ChangeDutyCycle(0)
-                            elif(color_determined == "red"):
-                                slideServo_p.ChangeDutyCycle(7)
-                                time.sleep(0.5)
-                                print("7")
-                                slideServo_p.ChangeDutyCycle(0)
+                        if(color_determined == launch_color and launch_ball_sorted == False):
+                            slideServo_p.ChangeDutyCycle(3.75)
+                            time.sleep(0.1)
+                            print("3.75 - launch ball sorted")
+                            slideServo_p.ChangeDutyCycle(0)
+                            launch_ball_sorted = True
+                        elif(color_determined == "blue"):
+                            slideServo_p.ChangeDutyCycle(5)
+                            time.sleep(0.1)
+                            print("5")
+                            slideServo_p.ChangeDutyCycle(0)
+                        elif(color_determined == "yellow"):
+                            slideServo_p.ChangeDutyCycle(6)
+                            time.sleep(0.1)
+                            print("6")
+                            slideServo_p.ChangeDutyCycle(0)
+                        elif(color_determined == "red"):
+                            slideServo_p.ChangeDutyCycle(7)
+                            time.sleep(0.1)
+                            print("7")
+                            slideServo_p.ChangeDutyCycle(0)
                                 
-                            # move servo to drop ball
-                            topServo_p.ChangeDutyCycle(5.5)
-                            time.sleep(0.5)
-                            topServo_p.ChangeDutyCycle(0)
-                            time.sleep(3)                        
+                        # move servo to drop ball
+                        topServo_p.ChangeDutyCycle(5.5)
+                        time.sleep(0.1)
+                        topServo_p.ChangeDutyCycle(0)
+                        time.sleep(3) 
+                    else:
+                        print("please select launch color then run sorting again")
 
                 if joystick.get_button(10):
                     print("Button 10 is pressed")
