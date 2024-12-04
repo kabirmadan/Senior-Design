@@ -295,9 +295,14 @@ if pygame.joystick.get_count() > 0:
                 ## start sorting system
                 if joystick.get_button(9):
                     print("Button 9 pressed")
+                    time.sleep(0.5)
                     if not sorting_on:
                         sorting_on = True
                         while sorting_on:
+                            if joystick.get_button(8):
+                                sorting_on = False
+                                print("sorting off")
+                                time.sleep(0.5)
                             print("sorting on")
                             topServo_p.ChangeDutyCycle(11)
                             time.sleep(0.5)
@@ -337,12 +342,7 @@ if pygame.joystick.get_count() > 0:
                             topServo_p.ChangeDutyCycle(5.5)
                             time.sleep(0.5)
                             topServo_p.ChangeDutyCycle(0)
-                            time.sleep(3)
-                    elif sorting_on:
-                        sorting_on = False
-                        time.sleep(0.5)
-                        print("sorting off")
-                        
+                            time.sleep(3)                        
 
                 if joystick.get_button(10):
                     print("Button 10 is pressed")
