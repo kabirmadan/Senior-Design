@@ -42,9 +42,11 @@ launcher_retract_p = GPIO.PWM(launcher_retract, 2000)
 weightlift_extend_p = GPIO.PWM(weightlift_extend, 2000)
 weightlift_retract_p = GPIO.PWM(weightlift_retract, 2000)
 topServo_p = GPIO.PWM(topServo, 50)
-topServo_p.start(12)
 slideServo_p = GPIO.PWM(slideServo, 50)
+
+topServo_p.start(12)
 slideServo_p.start(1)
+
 
 ### functions ###
 def set_motor_speed(motor_pin, speed):
@@ -240,6 +242,8 @@ if pygame.joystick.get_count() > 0:
 
                 ## set intake motors
                 if joystick.get_button(2):
+                    flywheel_p.start(0)
+                    pulley_p.start(0)
                     if not intake_on:
                         intake_on = True
                         set_motor_speed(flywheel_p, 255)
@@ -250,12 +254,16 @@ if pygame.joystick.get_count() > 0:
                         intake_on = False
                         set_motor_speed(flywheel_p, 0)
                         set_motor_speed(pulley_p, 0)
+                        flywheel_p.stop()
+                        pulley_p.stop()
                         print("intake off")
                         time.sleep(0.3)
 
                 ## set launch/ weightlift motor
                 hat_val = joystick.get_hat(0)
                 if hat_val == (0, 1):
+                    launcher_extend_p.start(0)
+                    launcher_retract_p.start(0)
                     if not launcher_extended:
                         launcher_extended = True
                         set_motor_speed(launcher_extend_p, 255)
@@ -268,9 +276,12 @@ if pygame.joystick.get_count() > 0:
                         time.sleep(0.3)
                 
                 if hat_val == (0, -1):
+                    weightlift_extend_p.start(0)
+                    weightlift_retract_p.start(0)
                     if not weightlift_extended:
                         weightlift_extended = True
-                        set_motor_speed(weightlift_extend_p, 255)
+                        #set_motor_speed(weightlift_extend_p, 255)
+                        weightlift_extend_p.ChangeDutyCycle(100)
                         print("weightlift extended")
                         time.sleep(0.3)
                     elif weightlift_extended:
@@ -374,5 +385,12 @@ else:
     print("No joystick detected")
 topServo_p.stop()
 slideServo_p.stop()
+flywheel_p.stop()
+pulley_p.stop()
+launcher_extend_p.stop()
+launcher_retract_p.stop()
+weightlift_extend_p.stop()
+weightlift_retract_p.stop()
 GPIO.cleanup()
 pygame.quit()
+
